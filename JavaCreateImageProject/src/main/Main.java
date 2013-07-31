@@ -145,6 +145,8 @@ public class Main {
 			getTypeBiteBinary(gra2d, dstImg,dst2d);
 			break;
 		case 13:
+			getByteIndexed(gra2d, dstImg,dst2d);
+			break;
 
 		}
 
@@ -153,7 +155,9 @@ public class Main {
 
 
 
-	
+
+
+
 
 	/**
 	 * case1出力
@@ -447,12 +451,11 @@ public class Main {
 				nrm2d[y][x] = (double)gra2d[y][x]/255;
 			}
 		}
-		
+
 		int pac2d[][] = new int[h][w];
 		for(int y = 0 ;y < h; y++){
 			for(int x = 0; x < w; x++){
 				pac2d[y][x] = (int)(nrm2d[y][x]*65535);
-				System.out.println(Integer.toBinaryString(pac2d[y][x]));
 				dstBuf.setElem(y*w+x,pac2d[y][x]);
 			}
 		}
@@ -466,12 +469,12 @@ public class Main {
 		}
 
 	}
-	
+
 	private void getTypeBiteBinary(int[][] gra2d, BufferedImage dstImg, int[][] dst2d) {
-		
+
 		int binT = ohts(gra2d,w,h);
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
-		System.out.println(dstBuf.getSize());
+
 		int bin2d[][] = new int[h][w];
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
@@ -482,8 +485,8 @@ public class Main {
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w/8; x++){
 				for(int b = 0; b < 8; b++){
-				pac1d[y][x] += bin2d[y][x*8+b] <<7-b;
-				dstBuf.setElem(y*(w/8)+x,pac1d[y][x]);
+					pac1d[y][x] += bin2d[y][x*8+b] <<7-b;
+					dstBuf.setElem(y*(w/8)+x,pac1d[y][x]);
 				}
 			}
 		}
@@ -496,14 +499,41 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
+	private void getByteIndexed(int[][] gra2d, BufferedImage dstImg, int[][] dst2d) {
+
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		//gra2d正規化
+		double nrm2d[][] =  new double[h][w];
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				nrm2d[y][x] = (double)gra2d[y][x]/255;
+				nrm2d[y][x] = (int)(nrm2d[y][x]*39);
+//				System.out.println(nrm2d[y][x]);
+			}
+		}
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				
+				dstBuf.setElem(y*w+x, (int) (216+nrm2d[y][x]));
+			}
+		}
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+
+
+
+
+
+
+
 	public static int ohts(int lum2d[][], int w, int h){
 
 		int histgram[] = new int[256];
