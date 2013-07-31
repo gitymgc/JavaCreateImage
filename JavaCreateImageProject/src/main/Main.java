@@ -127,6 +127,8 @@ public class Main {
 			get4Abgr(gra2d, dstImg,dst2d);
 			break;
 		case 7:
+			get4AbgrPre(gra2d, dstImg,dst2d);
+			break;
 		case 8:
 		case 9:
 		case 10:
@@ -307,8 +309,31 @@ public class Main {
 				for(int c = 1; c < 4; c++){
 					dstBuf.setElem(4*(y*w+x)+c,gra2d[y][x]);
 					dstBuf.setElem(4*(y*w+x),255);
-					
-					
+				}
+			}
+		}
+			
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+	
+	private void get4AbgrPre(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		System.out.println(h*w);
+		//各チャンネルに格納
+		
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				for(int c = 1; c < 4; c++){
+					dstBuf.setElem(4*(y*w+x)+c,gra2d[y][x]);
+					dstBuf.setElem(4*(y*w+x),255);
 				}
 			}
 		}
