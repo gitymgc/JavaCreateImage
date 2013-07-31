@@ -140,7 +140,10 @@ public class Main {
 			break;
 		case 11:
 			getUshortGray(gra2d, dstImg,dst2d);
+			break;
 		case 12:
+			getTypeBiteBinary(gra2d, dstImg,dst2d);
+			break;
 		case 13:
 
 		}
@@ -149,6 +152,8 @@ public class Main {
 
 
 
+
+	
 
 	/**
 	 * case1出力
@@ -460,6 +465,25 @@ public class Main {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private void getTypeBiteBinary(int[][] gra2d, BufferedImage dstImg, int[][] dst2d) {
+		
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		System.out.println(dstBuf.getSize());
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w/8; x++){
+				dstBuf.setElem(y*w/8+x, gra2d[y][x]);
+			}
+		}
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
 	}
 
 
