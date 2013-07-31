@@ -130,6 +130,8 @@ public class Main {
 			get4AbgrPre(gra2d, dstImg,dst2d);
 			break;
 		case 8:
+			get565Rgb(gra2d, dstImg,dst2d);
+			break;
 		case 9:
 		case 10:
 		case 11:
@@ -139,6 +141,7 @@ public class Main {
 		}
 
 	}
+
 
 	/**
 	 * case1出力
@@ -264,22 +267,22 @@ public class Main {
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
 		System.out.println(h*w);
 		//各チャンネルに格納
-//		int rgb1d[] = new int[dstBuf.getSize()];
-//		for(int y = 0; y < h; y++){
-//			for(int x = 0; x < w; x++){
-//				for(int c = 0; c < 3; c++){
-//					rgb1d[3*(y*w+x)+c] = gra2d[y][x];
-//				}
-//			}
-//		}
-//		for(int y = 0; y < h; y++){
-//			for(int x = 0; x < w; x++){
-//				for(int c = 0; c < 3; c++){
-//					dstBuf.setElem(3*(y*w+x)+c,rgb1d[3*(y*w+x)+c]);
-//				}
-//			}
-//		}
-		
+		//		int rgb1d[] = new int[dstBuf.getSize()];
+		//		for(int y = 0; y < h; y++){
+		//			for(int x = 0; x < w; x++){
+		//				for(int c = 0; c < 3; c++){
+		//					rgb1d[3*(y*w+x)+c] = gra2d[y][x];
+		//				}
+		//			}
+		//		}
+		//		for(int y = 0; y < h; y++){
+		//			for(int x = 0; x < w; x++){
+		//				for(int c = 0; c < 3; c++){
+		//					dstBuf.setElem(3*(y*w+x)+c,rgb1d[3*(y*w+x)+c]);
+		//				}
+		//			}
+		//		}
+
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
 				for(int c = 0; c < 3; c++){
@@ -287,7 +290,7 @@ public class Main {
 				}
 			}
 		}
-			
+
 		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
 		File dstFile = new File(dstFilePath);
 		try {
@@ -297,13 +300,13 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void get4Abgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
 
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
 		System.out.println(h*w);
 		//各チャンネルに格納
-		
+
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
 				for(int c = 1; c < 4; c++){
@@ -312,7 +315,7 @@ public class Main {
 				}
 			}
 		}
-			
+
 		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
 		File dstFile = new File(dstFilePath);
 		try {
@@ -322,13 +325,13 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void get4AbgrPre(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
 
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
 		System.out.println(h*w);
 		//各チャンネルに格納
-		
+
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
 				for(int c = 1; c < 4; c++){
@@ -337,7 +340,7 @@ public class Main {
 				}
 			}
 		}
-			
+
 		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
 		File dstFile = new File(dstFilePath);
 		try {
@@ -347,4 +350,42 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
+
+	private void get565Rgb(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		//gra2d正規化
+		double nrm2d[][] =  new double[h][w];
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				nrm2d[y][x] = (double)gra2d[y][x]/255;
+				System.out.println(nrm2d[y][x]);
+			}
+		}
+		System.out.println(dstBuf.getSize());
+		int pac2d[][] = new int[h][w];
+		for(int y = 0 ;y < h; y++){
+			for(int x = 0; x < w; x++){
+				pac2d[y][x] |= (int)(nrm2d[y][x]*31)<<11;
+				pac2d[y][x] |= (int)(nrm2d[y][x]*63)<<5;
+				pac2d[y][x] |= (int)(nrm2d[y][x]*31);
+				System.out.println(Integer.toBinaryString(pac2d[y][x]));
+				dstBuf.setElem(y*w+x,pac2d[y][x]);
+			}
+		}
+
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
+
+
+
+	}
+
 }
