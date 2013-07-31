@@ -115,11 +115,15 @@ public class Main {
 			System.out.println("type 2");
 			break;
 		case 3:
-			dstImagePre(gra2d, dstImg,dst2d);
+			getArgbPre(gra2d, dstImg,dst2d);
 			System.out.println("type 3");
 			break;
 		case 4:
+			getRgb(gra2d, dstImg,dst2d);
+			System.out.println("type 1");
+			break;
 		case 5:
+			
 		case 6:
 		case 7:
 		case 8:
@@ -197,7 +201,7 @@ public class Main {
 		}
 	}
 
-	private void dstImagePre(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+	private void getArgbPre(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
 
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
