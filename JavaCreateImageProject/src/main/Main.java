@@ -124,6 +124,8 @@ public class Main {
 			get3Bgr(gra2d, dstImg,dst2d);
 			break;
 		case 6:
+			get4Abgr(gra2d, dstImg,dst2d);
+			break;
 		case 7:
 		case 8:
 		case 9:
@@ -260,21 +262,57 @@ public class Main {
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
 		System.out.println(h*w);
 		//各チャンネルに格納
-		int rgb1d[] = new int[dstBuf.getSize()];
+//		int rgb1d[] = new int[dstBuf.getSize()];
+//		for(int y = 0; y < h; y++){
+//			for(int x = 0; x < w; x++){
+//				for(int c = 0; c < 3; c++){
+//					rgb1d[3*(y*w+x)+c] = gra2d[y][x];
+//				}
+//			}
+//		}
+//		for(int y = 0; y < h; y++){
+//			for(int x = 0; x < w; x++){
+//				for(int c = 0; c < 3; c++){
+//					dstBuf.setElem(3*(y*w+x)+c,rgb1d[3*(y*w+x)+c]);
+//				}
+//			}
+//		}
+		
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
 				for(int c = 0; c < 3; c++){
-					rgb1d[3*(y*w+x)+c] = gra2d[y][x];
+					dstBuf.setElem(3*(y*w+x)+c,gra2d[y][x]);
 				}
 			}
 		}
+			
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+	
+	private void get4Abgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		System.out.println(h*w);
+		//各チャンネルに格納
+		
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
-				for(int c = 0; c < 3; c++){
-					dstBuf.setElem(3*(y*w+x)+c,rgb1d[3*(y*w+x)+c]);
+				for(int c = 1; c < 4; c++){
+					dstBuf.setElem(4*(y*w+x)+c,gra2d[y][x]);
+					dstBuf.setElem(4*(y*w+x),255);
+					
+					
 				}
 			}
 		}
+			
 		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
 		File dstFile = new File(dstFilePath);
 		try {
