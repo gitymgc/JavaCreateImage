@@ -469,11 +469,22 @@ public class Main {
 	
 	private void getTypeBiteBinary(int[][] gra2d, BufferedImage dstImg, int[][] dst2d) {
 		
+		int binT = ohts(gra2d,w,h);
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
 		System.out.println(dstBuf.getSize());
+		int bin2d[][] = new int[h][w];
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				bin2d[y][x] = (gra2d[y][x] <binT)?0:1;
+			}
+		}
+		int pac1d[][] = new int [h][w/8];
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w/8; x++){
-				dstBuf.setElem(y*w/8+x, gra2d[y][x]);
+				for(int b = 0; b < 8; b++){
+				pac1d[y][x] += bin2d[y][x*8+b] <<7-b;
+				dstBuf.setElem(y*(w/8)+x,pac1d[y][x]);
+				}
 			}
 		}
 		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
@@ -484,6 +495,90 @@ public class Main {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public static int ohts(int lum2d[][], int w, int h){
+
+		int histgram[] = new int[256];
+		for(int y = 0; y < h; y++)
+			for(int x = 0; x < w; x++)
+				histgram[lum2d[y][x]]++;
+
+		int sum = 0;
+		int max_no = 0;
+		long data = 0;
+		double average = 0, average1 = 0, average2 = 0;
+		double max = 0.0;
+		int count1, count2;
+		double breakup1, breakup2;
+		double class1, class2;
+		double tmp;
+
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				sum += lum2d[y][x];
+			}
+		}
+
+		average = sum / (w*h);
+
+		for(int i = 0; i < 256; i++){
+
+			count1 = count2 = 0;
+			data = 0;
+			breakup1 = breakup2 = 0;
+			tmp = 0;
+
+			for(int j = 0; j < i; j++){
+				count1 += histgram[j];
+				data += histgram[j] * j;
+			}
+
+			if(count1 != 0){
+				average1 = (double) data / (double) count1;
+
+				for(int j = 0; j < i; j++){
+					breakup1 += Math.pow(j - average1, 2) * histgram[j];
+				}
+				breakup1 /= (double) count1;
+			}
+
+			data = 0;
+
+			for(int j = i; j < 256; j++){
+				count2 += histgram[j];
+				data += histgram[j] * j;
+			}
+
+			if(count2 != 0){
+				average2 = (double) data / (double) count2;
+
+				for(int j = i; j < 256; j++){
+					breakup2 += Math.pow(j - average2, 2) * histgram[j];
+				}
+				breakup2 /= (double) count2;
+			}
+
+			class1 = (count1 * breakup1 + count2 * breakup2);
+			class2 = count1 * Math.pow(average1 - average, 2) + count2 * Math.pow(average2 - average,  2);
+
+			tmp = class2 / class1;
+
+			if(max < tmp){
+				max = tmp;
+				max_no = i;
+			}
+		}
+
+		return max_no;
+
 	}
 
 
