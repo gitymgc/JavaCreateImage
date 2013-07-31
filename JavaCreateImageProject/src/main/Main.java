@@ -75,13 +75,13 @@ public class Main {
 
 	private void getGrayScaleImage(int[][] gra2d, BufferedImage dstImg) {
 
-		System.out.println(dstImg.getType());
-		System.out.println(this._imageTypes[dstImg.getType()]);
+		//		System.out.println(dstImg.getType());
+		//		System.out.println(this._imageTypes[dstImg.getType()]);
 
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
-		System.out.println(dstBuf.getSize());
+		//		System.out.println(dstBuf.getSize());
 
-		System.out.println();
+		//		System.out.println();
 		int dst2d[][]  = new int[h][w];
 		getDst2d(gra2d,dstImg,dst2d);
 
@@ -108,22 +108,21 @@ public class Main {
 		switch(dstImg.getType()){
 		case 1: 
 			getRgb(gra2d, dstImg,dst2d);
-			System.out.println("type 1");
 			break;
 		case 2:
 			getArgb(gra2d, dstImg, dst2d);
-			System.out.println("type 2");
 			break;
 		case 3:
+			//(getArgb)
 			getArgbPre(gra2d, dstImg,dst2d);
-			System.out.println("type 3");
 			break;
 		case 4:
-			getRgb(gra2d, dstImg,dst2d);
-			System.out.println("type 1");
+			//(getRgb)
+			getBgr(gra2d, dstImg,dst2d);
 			break;
 		case 5:
-			
+			get3Bgr(gra2d, dstImg,dst2d);
+			break;
 		case 6:
 		case 7:
 		case 8:
@@ -145,13 +144,12 @@ public class Main {
 	private void getRgb(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
 
 		//各チャンネルに格納
-
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
 				for(int c = 0; c < 3; c++){
 					dst2d[y][x] += gra2d[y][x] <<(16-(8*c)) ;
 				}
-				System.out.println(Integer.toBinaryString(dst2d[y][x]));
+				//				System.out.println(Integer.toBinaryString(dst2d[y][x]));
 			}
 		}
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
@@ -174,14 +172,14 @@ public class Main {
 	private void getArgb(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
 
 		//各チャンネルに格納
-
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
+				//アルファ値格納
 				dst2d[y][x] = 255 <<24 ;
 				for(int c = 0; c < 3; c++){
 					dst2d[y][x] += gra2d[y][x] <<(16-(8*c)) ;
 				}
-				System.out.println(Integer.toBinaryString(dst2d[y][x]));
+				//				System.out.println(Integer.toBinaryString(dst2d[y][x]));
 			}
 		}
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
@@ -205,11 +203,12 @@ public class Main {
 
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
+				//アルファ値格納
 				dst2d[y][x] = 255 <<24 ;
 				for(int c = 0; c < 3; c++){
 					dst2d[y][x] += gra2d[y][x] <<(16-(8*c)) ;
 				}
-				System.out.println(Integer.toBinaryString(dst2d[y][x]));
+				//				System.out.println(Integer.toBinaryString(dst2d[y][x]));
 			}
 		}
 		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
@@ -219,6 +218,63 @@ public class Main {
 			}
 		}
 
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+
+	private void getBgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+
+		//各チャンネルに格納
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				for(int c = 0; c < 3; c++){
+					dst2d[y][x] += gra2d[y][x] <<(16-(8*c)) ;
+				}
+				//				System.out.println(Integer.toBinaryString(dst2d[y][x]));
+			}
+		}
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		for(int y = 0; y< h; y++){
+			for(int x = 0; x < w; x++){
+				dstBuf.setElem(y*w+x, dst2d[y][x]);
+			}
+		}
+
+		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+	private void get3Bgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+
+		DataBuffer dstBuf = dstImg.getRaster().getDataBuffer();
+		System.out.println(h*w);
+		//各チャンネルに格納
+		int rgb1d[] = new int[dstBuf.getSize()];
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				for(int c = 0; c < 3; c++){
+					rgb1d[3*(y*w+x)+c] = gra2d[y][x];
+				}
+			}
+		}
+		for(int y = 0; y < h; y++){
+			for(int x = 0; x < w; x++){
+				for(int c = 0; c < 3; c++){
+					dstBuf.setElem(3*(y*w+x)+c,rgb1d[3*(y*w+x)+c]);
+				}
+			}
+		}
 		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
 		File dstFile = new File(dstFilePath);
 		try {
