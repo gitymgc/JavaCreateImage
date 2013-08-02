@@ -84,26 +84,47 @@ public class ImageEncoderSample {
 		//		System.out.println();
 		int dst2d[][]  = new int[h][w];
 		getDst2d(gra2d,dstImg,dst2d);
-
-		//		for(int y = 0; y< h; y++){
-		//			for(int x = 0; x < w; x++){
-		//				dstBuf.setElem(y*w+x, dst2d[y][x]);
-		//			}
-		//		}
-		//
-		//		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		//		File dstFile = new File(dstFilePath);
-		//		try {
-		//			ImageIO.write(dstImg, "png", dstFile);
-		//		} catch (IOException e) {
-		//			// TODO 自動生成された catch ブロック
-		//			e.printStackTrace();
-		//		}
-
+		
+		String dstFilePath = _dstDirPath + "png" + this._imageTypes[dstImg.getType()]+".png";
+		File dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "png", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		
+		dstFilePath =   _dstDirPath + "bmp" +this._imageTypes[dstImg.getType()]+".bmp";
+		dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "bmp", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		
+		dstFilePath =_dstDirPath + "jpg"+this._imageTypes[dstImg.getType()]+".jpg";
+		dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "jpg", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		
+		dstFilePath =_dstDirPath + "gif"+this._imageTypes[dstImg.getType()]+".gif";
+		dstFile = new File(dstFilePath);
+		try {
+			ImageIO.write(dstImg, "gif", dstFile);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
 
 
 	}
 	private void getDst2d(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
+
 
 		switch(dstImg.getType()){
 		case 1: 
@@ -182,14 +203,7 @@ public class ImageEncoderSample {
 			}
 		}
 
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
+
 	}
 
 	private void getArgb(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
@@ -211,15 +225,6 @@ public class ImageEncoderSample {
 				dstBuf.setElem(y*w+x, dst2d[y][x]);
 			}
 		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 
 	private void getArgbPre(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
@@ -240,15 +245,6 @@ public class ImageEncoderSample {
 				dstBuf.setElem(y*w+x, dst2d[y][x]);
 			}
 		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 
 	private void getBgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
@@ -267,15 +263,6 @@ public class ImageEncoderSample {
 			for(int x = 0; x < w; x++){
 				dstBuf.setElem(y*w+x, dst2d[y][x]);
 			}
-		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
 		}
 	}
 	private void get3Bgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
@@ -305,15 +292,6 @@ public class ImageEncoderSample {
 				}
 			}
 		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 
 	private void get4Abgr(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
@@ -329,15 +307,6 @@ public class ImageEncoderSample {
 				}
 			}
 		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 
 	private void get4AbgrPre(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
@@ -352,15 +321,6 @@ public class ImageEncoderSample {
 					dstBuf.setElem(4*(y*w+x),255);
 				}
 			}
-		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
 		}
 	}
 
@@ -383,15 +343,6 @@ public class ImageEncoderSample {
 				dstBuf.setElem(y*w+x,pac2d[y][x]);
 			}
 		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 	private void get555Rgb(int[][] gra2d, BufferedImage dstImg,int[][] dst2d) {
 
@@ -412,15 +363,6 @@ public class ImageEncoderSample {
 				dstBuf.setElem(y*w+x,pac2d[y][x]);
 			}
 		}
-
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 	private void getGray(int[][] gra2d, BufferedImage dstImg, int[][] dst2d) {
 
@@ -429,14 +371,6 @@ public class ImageEncoderSample {
 			for(int x = 0; x < w; x++){
 				dstBuf.setElem(y*w+x,gra2d[y][x]);
 			}
-		}
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
 		}
 
 	}
@@ -458,14 +392,6 @@ public class ImageEncoderSample {
 				pac2d[y][x] = (int)(nrm2d[y][x]*65535);
 				dstBuf.setElem(y*w+x,pac2d[y][x]);
 			}
-		}
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
 		}
 
 	}
@@ -490,14 +416,6 @@ public class ImageEncoderSample {
 				}
 			}
 		}
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
 	}
 
 	private void getByteIndexed(int[][] gra2d, BufferedImage dstImg, int[][] dst2d) {
@@ -509,22 +427,14 @@ public class ImageEncoderSample {
 			for(int x = 0; x < w; x++){
 				nrm2d[y][x] = (double)gra2d[y][x]/255;
 				nrm2d[y][x] = (int)(nrm2d[y][x]*39);
-//				System.out.println(nrm2d[y][x]);
+				//				System.out.println(nrm2d[y][x]);
 			}
 		}
 		for(int y = 0; y < h; y++){
 			for(int x = 0; x < w; x++){
-				
+
 				dstBuf.setElem(y*w+x, (int) (216+nrm2d[y][x]));
 			}
-		}
-		String dstFilePath = _dstDirPath + this._imageTypes[dstImg.getType()]+".png";
-		File dstFile = new File(dstFilePath);
-		try {
-			ImageIO.write(dstImg, "png", dstFile);
-		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
 		}
 	}
 
