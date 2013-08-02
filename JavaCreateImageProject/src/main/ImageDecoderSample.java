@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -40,8 +39,6 @@ public class ImageDecoderSample {
 		File srcDir = new File(this._srcDirPath);
 		File srcFiles[] = srcDir.listFiles();
 
-		ArrayList<Integer> typeList = new ArrayList<Integer>();
-
 		for(File srcFile : srcFiles){
 
 			BufferedImage srcImg = ImageIO.read(srcFile);
@@ -73,16 +70,7 @@ public class ImageDecoderSample {
 			File dstFile = new File(dstFilePath);
 
 			ImageIO.write(dstImg, "png", dstFile);
-
-			//						System.out.println(srcFile.getName()+" , "+this._imageTypes[srcImg.getType()]);
-			//			if( ! typeList.contains( srcImg.getType() ))
-			//				typeList.add( srcImg.getType() );
 		}
-		//		System.out.println(Arrays.toString( typeList.toArray() ));
-		//
-		//		for(Integer idx : typeList){
-		//			System.out.println(this._imageTypes[ idx ]);
-		//		}
 	}
 
 
@@ -97,41 +85,63 @@ public class ImageDecoderSample {
 
 		switch(srcImg.getType()){
 
-		case 5:
-			//TYPE_3BYTE_BGR
+
+		case BufferedImage.TYPE_3BYTE_BGR:
+			/**
+			 * b,g,r,b,g,r....の順番に各チャンネル3つがh*w個ずつ並んだ配列
+			 */
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem((y*w+x)*3);
 				}
 			}
 			break;
-		case 6:
-			//TYPE_4BYTE_ABGR
+
+		case BufferedImage.TYPE_4BYTE_ABGR:
+			/**
+			 * a,b,g,r,a,b,g,r....の順番に各チャンネル4つがh*w個ずつ並んだ配列
+			 */
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem((y*w+x)*4+1);
 				}
 			}
 			break;
-		case 8:
-			//TYPE_USHORT_565_RGB
+
+		case  BufferedImage.TYPE_USHORT_565_RGB:
+			/**
+			 * rgb3チャンネルがバイト配列でまとめられた一つの値が、h*w個ならんだ配列
+			 * バイト配列の1~5桁が青、6~11桁が緑、12~16桁が赤のチャンネルを表す。
+			 * それぞれの値には所有する桁数で重みがつけられているので、、
+			 * 重みで割ることで、正規化された輝度値の割合を取得することが出来る。
+			 * グレイスケール文字は、3チャンネルの輝度値が全て同じ割合なので、
+			 * いずれかのチャンネルから取得した割合に255をかけることで、、8bitの配列による輝度値を取得することが出来る。
+			 */
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem(y*w+x);
 				}
 			}
 			//いずれかのチャンネルの倍率取得
-			double red[][] = new double[h][w];
+			int red[][] = new int[h][w];
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					red[y][x] = src2d[y][x] >>11 & 0xff;
-				red[y][x] = red[y][x]/31;
-				src2d[y][x] = (int) (red[y][x]*255);
+				// 8.22 = 255 / 31
+				// 8.22 = (2^8-1) / (2^5-1)
+				src2d[y][x] = (int) (red[y][x]*8);
 				}
 			}
 			break;
-		case 9:
-			//TYPE_USHORT_555_RGB
+		case BufferedImage.TYPE_USHORT_555_RGB:
+			/**
+			 * rgb3チャンネルがバイト配列でまとめられた一つのint値が、h*w個ならんだ配列
+			 * バイト配列の1~5桁が青、6~10桁が緑、11~15桁が赤のチャンネルを表す。
+			 * それぞれの値には限られた桁数で色を表すための重みがつけられているので、、
+			 * 重みで割ることで、正規化された輝度値の割合を取得することが出来る。
+			 * グレイスケール文字は、3チャンネルの輝度値が全て同じ割合なので、
+			 * いずれかのチャンネルから取得した割合に255をかけることで、、8bitの配列による輝度値を取得することが出来る。
+			 */
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem(y*w+x);
@@ -139,25 +149,31 @@ public class ImageDecoderSample {
 			}
 
 			//いずれかのチャンネルの倍率取得
-			double red2[][] = new double[h][w];
+			int red2[][] = new int[h][w];
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					red2[y][x] = src2d[y][x] >>10 & 0xff;
-				red2[y][x] = red2[y][x]/31;
-				src2d[y][x] = (int) (red2[y][x]*255);
+				// 8.22 = 255 / 31
+				// 8.22 = (2^8-1) / (2^5-1)
+				src2d[y][x] = (int) (red2[y][x]*8);
 				}
 			}
 			break;
-		case 10:
-			//TYPE_BYTE_GRAY
+		case  BufferedImage.TYPE_BYTE_GRAY:
+			/**
+			 * 同様のデータ型なので、そのまま値を代入
+			 */
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem(y*w+x);
 				}
 			}
 			break;
-		case 11:
-			//TYPE_USHORT_GRAY
+		case  BufferedImage.TYPE_USHORT_GRAY:
+			/**
+			 * 0~65535の階調で色が示されているため、その割合を0~255に当て嵌めればよい。
+			 * ので、255で割るだけ。
+			 */
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem(y*w+x);
@@ -165,9 +181,18 @@ public class ImageDecoderSample {
 				}
 			}
 			break;
-		case 12:
-			//TYPE_BYTE_BINARY
-			if(srcBuf.getSize() != 512){
+		case  BufferedImage.TYPE_BYTE_BINARY:
+			/**
+			 * 通常TYPE_BYTE_BINARYでは、8ピクセルの値(0か1)が八桁のバイト配列にまとめられて格納されているので、
+			 * 階調をもたず、各ピクセルの輝度値は、その値をbitShiftにより分解して0か255を新たに格納しなおす。
+			 * が、
+			 * すぐ下のif文内に入るものは、2ピクセルごと八桁のバイト配列にまとまっており、
+			 * そのため1ピクセルはバイト配列4桁分(0~15)の階調を持つ、
+			 * この値を、0~255に当てはめることで、
+			 * バイナリデータながら、階調を持ったデータの復元が出来る。
+			 * 
+			 */
+			if(srcBuf.getSize() != h*(w/8)){
 				//まずバイト配列を取得する
 				//2048
 				int bin2d[][] = new int[h][w/2];
@@ -184,11 +209,11 @@ public class ImageDecoderSample {
 						}
 					}
 				}
-				double par2d[][] = new double[h][w];
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
-						par2d[y][x] = (double)sep2d[y][x]/15;
-						src2d[y][x] = (int) (par2d[y][x]*255);
+						// 17 = 255 / 15
+						// 17 = (2^8-1) / (2^4-1)
+						src2d[y][x] = (int) (sep2d[y][x]*17);
 					}
 				}
 
@@ -213,8 +238,12 @@ public class ImageDecoderSample {
 			break;
 
 
-		case 13:
-			//TYPE_BYTE_INDEXED
+		case  BufferedImage.TYPE_BYTE_INDEXED:
+			/**
+			 * このデータ型は、輝度値が217~255の間の39階調を使用して表されている。
+			 * その輝度値217~255(0~39)をという数値をそのままTYPE_BYTE_GRAYで使用すると、
+			 * 階調がかたよってしまうので、0~255の値に変換して出力する。
+			 */
 			int max = Integer.MIN_VALUE;
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
@@ -224,80 +253,25 @@ public class ImageDecoderSample {
 					}
 				}
 			}
-			if(max ==255 && srcFile.getName().equals("gifTYPE_BYTE_GRAY.gif")){
-
-				for(int y = 0; y < h; y++){
-					for(int x = 0; x < w; x++){
-						src2d[y][x] = srcBuf.getElem(y*w+x);
-						//						src2d[y][x] = (int) (((double)(src2d[y][x])/38)*255);
+			int maxV = Integer.MIN_VALUE;
+			int minV = Integer.MAX_VALUE;
+			for(int y = 0; y < h; y++){
+				for(int x = 0; x < w; x++){
+					if(src2d[y][x] > maxV){
+						maxV = src2d[y][x];
+					}
+					if(src2d[y][x] < minV){
+						minV = src2d[y][x];
 					}
 				}
-
-
-			}else
-				if(max ==255 ){
-					for(int y = 0; y < h; y++){
-						for(int x = 0; x < w; x++){
-							src2d[y][x] = srcBuf.getElem(y*w+x);
-							//						System.out.println(Integer.toBinaryString(src2d[y][x]));
-//							System.out.println(src2d[y][x]);
-							src2d[y][x] = (int) (((double)(src2d[y][x]-217)/(255-217))*255);
-
-						}
-					}
-				}else{
-					int maxV = Integer.MIN_VALUE;
-					int minV = Integer.MAX_VALUE;
-					for(int y = 0; y < h; y++){
-						for(int x = 0; x < w; x++){
-							src2d[y][x] = srcBuf.getElem(y*w+x);
-							if(src2d[y][x] > maxV){
-								maxV = src2d[y][x];
-							}
-							if(src2d[y][x] < minV){
-								minV = src2d[y][x];
-							}
-							//							src2d[y][x] = (int) (((double)(src2d[y][x])/38)*255);
-						}
-					}
-					System.out.println(srcFile.getName());
-					System.out.println(minV+" , "+maxV);
-					for(int y = 0; y < h; y++){
-						for(int x = 0; x < w; x++){
-							src2d[y][x] = (int)(((double)(src2d[y][x] - minV) / (maxV - minV))*255);
-						}
-					}
-
+			}
+			System.out.println(minV+" , "+maxV);
+			for(int y = 0; y < h; y++){
+				for(int x = 0; x < w; x++){
+					src2d[y][x] = (255*(src2d[y][x]-minV))/(maxV-minV);
 				}
-
-
-
-			//			BufferedImage dstImg = new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-			//			WritableRaster dstRas = dstImg.getRaster();
-			//			DataBuffer dstBuf = dstRas.getDataBuffer();
-			//
-			//			int dst2d[][] = new int[h][w];
-			//			for(int y = 0; y < h; y ++){
-			//				for(int x = 0; x < w; x++){
-			//					dst2d[y][x] = src2d[y][x];
-			//					dstBuf.setElem(y*w+x, dst2d[y][x]);
-			//				}
-			//			}
-			//
-			//			String path = srcFile.getName();
-			//			String[] name = path.split("\\.");
-			//			String dstFilePath = this._dstDirPath+name[0]+".png";
-			//			File dstFile = new File(dstFilePath);
-			//
-			//			try {
-			//				ImageIO.write(dstImg, "png", dstFile);
-			//			} catch (IOException e) {
-			//				// TODO 自動生成された catch ブロック
-			//				e.printStackTrace();
-			//			}
-
+			}
 			break;
 		}
-
 	}
 }
