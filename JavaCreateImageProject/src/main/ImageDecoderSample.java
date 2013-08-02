@@ -187,11 +187,11 @@ public class ImageDecoderSample {
 						}
 					}
 				}
+				double par2d[][] = new double[h][w];
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
-						sep2d[y][x] = sep2d[y][x]/15;
-						System.out.println(sep2d[y][x]);
-						src2d[y][x] = sep2d[y][x]*255;
+						par2d[y][x] = (double)sep2d[y][x]/15;
+						src2d[y][x] = (int) (par2d[y][x]*255);
 					}
 				}
 
