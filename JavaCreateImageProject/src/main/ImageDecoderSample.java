@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -56,24 +55,24 @@ public class ImageDecoderSample {
 			/*
 			 * 統一出力TYPE_BYTE_GRAY.png
 			 */
-			//			BufferedImage dstImg = new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-			//			WritableRaster dstRas = dstImg.getRaster();
-			//			DataBuffer dstBuf = dstRas.getDataBuffer();
-			//			
-			//			int dst2d[][] = new int[h][w];
-			//			for(int y = 0; y < h; y ++){
-			//				for(int x = 0; x < w; x++){
-			//					dst2d[y][x] = src2d[y][x];
-			//					dstBuf.setElem(y*w+x, dst2d[y][x]);
-			//				}
-			//			}
-			//
-			//			String path = srcFile.getName();
-			//			String[] name = path.split("\\.");
-			//			String dstFilePath = this._dstDirPath+name[0]+".png";
-			//			File dstFile = new File(dstFilePath);
-			//		
-			//			ImageIO.write(dstImg, "png", dstFile);
+			BufferedImage dstImg = new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
+			WritableRaster dstRas = dstImg.getRaster();
+			DataBuffer dstBuf = dstRas.getDataBuffer();
+
+			int dst2d[][] = new int[h][w];
+			for(int y = 0; y < h; y ++){
+				for(int x = 0; x < w; x++){
+					dst2d[y][x] = src2d[y][x];
+					dstBuf.setElem(y*w+x, dst2d[y][x]);
+				}
+			}
+
+			String path = srcFile.getName();
+			String[] name = path.split("\\.");
+			String dstFilePath = this._dstDirPath+this._imageTypes[srcImg.getType()]+"_"+name[0]+".png";
+			File dstFile = new File(dstFilePath);
+
+			ImageIO.write(dstImg, "png", dstFile);
 
 			//						System.out.println(srcFile.getName()+" , "+this._imageTypes[srcImg.getType()]);
 			//			if( ! typeList.contains( srcImg.getType() ))
@@ -175,28 +174,27 @@ public class ImageDecoderSample {
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w/2; x++){
 						bin2d[y][x] = srcBuf.getElem(y*(w/2)+x);
+						System.out.println(Integer.toBinaryString(bin2d[y][x]));
 					}
 				}
-				//パックされた輝度値を解体する
-				int part2d[][] = new int[h][w*4];
+				int sep2d[][] = new int[h][w];
 				for(int y = 0; y < h; y++){
-					for(int x = 0; x < w/2;x++){
-						for(int b = 0; b < 8; b++){
-							part2d[y][x*8+b] = bin2d[y][x]>>7-b & 0x01;
-						if(part2d[y][x*8+b] != 0)
-							part2d[y][x*8+b] = 255;
+					for(int x = 0; x < w/2; x++){
+						for(int b = 0; b < 2; b++){
+							sep2d[y][2*x+b] = bin2d[y][x]>>4-(4*b) & 0x0f;
+						System.out.println(sep2d[y][2*x+b]);
+						System.out.println(Integer.toBinaryString(sep2d[y][2*x+b]));
 						}
 					}
 				}
-
-				//一つのチャンネルを取得する
-				int red3[][] = new int[h][w];
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w; x++){
-						red3[y][x] = part2d[y][4*x+0];
-						src2d[y][x] = red3[y][x];
+						sep2d[y][x] = sep2d[y][x]/15;
+						System.out.println(sep2d[y][x]);
+						src2d[y][x] = sep2d[y][x]*255;
 					}
 				}
+
 
 			}else{
 				int bin2d[][] = new int[h][w/8];
@@ -215,41 +213,52 @@ public class ImageDecoderSample {
 					}
 				}
 			}
-			BufferedImage dstImg = new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
-			WritableRaster dstRas = dstImg.getRaster();
-			DataBuffer dstBuf = dstRas.getDataBuffer();
-
-			int dst2d[][] = new int[h][w];
-			for(int y = 0; y < h; y ++){
-				for(int x = 0; x < w; x++){
-					dst2d[y][x] = src2d[y][x];
-					dstBuf.setElem(y*w+x, dst2d[y][x]);
-				}
-			}
-
-			String path = srcFile.getName();
-			String[] name = path.split("\\.");
-			String dstFilePath = this._dstDirPath+name[0]+".png";
-			File dstFile = new File(dstFilePath);
-
-			try {
-				ImageIO.write(dstImg, "png", dstFile);
-			} catch (IOException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
-
 			break;
 
 
-			//		case 13:
-			//			//TYPE_BYTE_INDEXED
-			//			for(int y = 0; y < h; y++){
+		case 13:
+			//TYPE_BYTE_INDEXED
+			System.out.println(srcBuf.getSize());
+			for(int y = 0; y < h; y++){
+				for(int x = 0; x < w; x++){
+					src2d[y][x] = srcBuf.getElem(y*w+x);
+					//					System.out.println();
+					src2d[y][x] = ((src2d[y][x]-217)/(255-217))*255;
+
+				}
+			}
+
+			for(int y = 0; y < h; y++){
+				for(int x = 0; x < w; x++){
+					src2d[y][x] = srcBuf.getElem(y*w+x);
+				}
+			}
+
+			//			BufferedImage dstImg = new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
+			//			WritableRaster dstRas = dstImg.getRaster();
+			//			DataBuffer dstBuf = dstRas.getDataBuffer();
+			//
+			//			int dst2d[][] = new int[h][w];
+			//			for(int y = 0; y < h; y ++){
 			//				for(int x = 0; x < w; x++){
-			//					src2d[y][x] = srcBuf.getElem(y*w+x);
+			//					dst2d[y][x] = src2d[y][x];
+			//					dstBuf.setElem(y*w+x, dst2d[y][x]);
 			//				}
 			//			}
-			//			break;
+			//
+			//			String path = srcFile.getName();
+			//			String[] name = path.split("\\.");
+			//			String dstFilePath = this._dstDirPath+name[0]+".png";
+			//			File dstFile = new File(dstFilePath);
+			//
+			//			try {
+			//				ImageIO.write(dstImg, "png", dstFile);
+			//			} catch (IOException e) {
+			//				// TODO 自動生成された catch ブロック
+			//				e.printStackTrace();
+			//			}
+
+			break;
 		}
 
 	}
