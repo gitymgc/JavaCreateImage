@@ -7,10 +7,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Main {
+public class ImageEncoderSample {
 
 	public static void main(String args[]) throws Exception{
-		new Main().exec();
+		new ImageEncoderSample().exec();
 	}
 	int w,h;
 	String _srcDirPath = "./resources/Main/src/";
