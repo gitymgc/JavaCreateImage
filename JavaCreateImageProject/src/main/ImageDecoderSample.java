@@ -174,7 +174,6 @@ public class ImageDecoderSample {
 				for(int y = 0; y < h; y++){
 					for(int x = 0; x < w/2; x++){
 						bin2d[y][x] = srcBuf.getElem(y*(w/2)+x);
-						System.out.println(Integer.toBinaryString(bin2d[y][x]));
 					}
 				}
 				int sep2d[][] = new int[h][w];
@@ -182,8 +181,6 @@ public class ImageDecoderSample {
 					for(int x = 0; x < w/2; x++){
 						for(int b = 0; b < 2; b++){
 							sep2d[y][2*x+b] = bin2d[y][x]>>4-(4*b) & 0x0f;
-						System.out.println(sep2d[y][2*x+b]);
-						System.out.println(Integer.toBinaryString(sep2d[y][2*x+b]));
 						}
 					}
 				}
@@ -218,21 +215,62 @@ public class ImageDecoderSample {
 
 		case 13:
 			//TYPE_BYTE_INDEXED
-			System.out.println(srcBuf.getSize());
+			int max = Integer.MIN_VALUE;
 			for(int y = 0; y < h; y++){
 				for(int x = 0; x < w; x++){
 					src2d[y][x] = srcBuf.getElem(y*w+x);
-					//					System.out.println();
-					src2d[y][x] = ((src2d[y][x]-217)/(255-217))*255;
-
+					if(src2d[y][x] > max){
+						max = src2d[y][x];
+					}
 				}
 			}
+			if(max ==255 && srcFile.getName().equals("gifTYPE_BYTE_GRAY.gif")){
 
-			for(int y = 0; y < h; y++){
-				for(int x = 0; x < w; x++){
-					src2d[y][x] = srcBuf.getElem(y*w+x);
+				for(int y = 0; y < h; y++){
+					for(int x = 0; x < w; x++){
+						src2d[y][x] = srcBuf.getElem(y*w+x);
+						//						src2d[y][x] = (int) (((double)(src2d[y][x])/38)*255);
+					}
 				}
-			}
+
+
+			}else
+				if(max ==255 ){
+					for(int y = 0; y < h; y++){
+						for(int x = 0; x < w; x++){
+							src2d[y][x] = srcBuf.getElem(y*w+x);
+							//						System.out.println(Integer.toBinaryString(src2d[y][x]));
+//							System.out.println(src2d[y][x]);
+							src2d[y][x] = (int) (((double)(src2d[y][x]-217)/(255-217))*255);
+
+						}
+					}
+				}else{
+					int maxV = Integer.MIN_VALUE;
+					int minV = Integer.MAX_VALUE;
+					for(int y = 0; y < h; y++){
+						for(int x = 0; x < w; x++){
+							src2d[y][x] = srcBuf.getElem(y*w+x);
+							if(src2d[y][x] > maxV){
+								maxV = src2d[y][x];
+							}
+							if(src2d[y][x] < minV){
+								minV = src2d[y][x];
+							}
+							//							src2d[y][x] = (int) (((double)(src2d[y][x])/38)*255);
+						}
+					}
+					System.out.println(srcFile.getName());
+					System.out.println(minV+" , "+maxV);
+					for(int y = 0; y < h; y++){
+						for(int x = 0; x < w; x++){
+							src2d[y][x] = (int)(((double)(src2d[y][x] - minV) / (maxV - minV))*255);
+						}
+					}
+
+				}
+
+
 
 			//			BufferedImage dstImg = new BufferedImage(w,h,BufferedImage.TYPE_BYTE_GRAY);
 			//			WritableRaster dstRas = dstImg.getRaster();
